@@ -23,7 +23,7 @@ public class CollegeRepository {
         entityManager.persist(college);
     }
 
-    public College getCollege(int id) {
+    public College getCollege(long id) {
         return entityManager.find(College.class, id);
     }
 }

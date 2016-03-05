@@ -1,5 +1,8 @@
 package com.spring.hibernate.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Department {
 
     private int id;
@@ -19,4 +22,15 @@ public class Department {
     public College getCollege() {
         return college;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return new EqualsBuilder().reflectionEquals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).reflectionHashCode(this);
+    }
+
 }
