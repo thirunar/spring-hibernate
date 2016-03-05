@@ -35,10 +35,6 @@ public class Department {
         return name;
     }
 
-//    public College getCollege() {
-//        return college;
-//    }
-
     @Override
     public boolean equals(Object o) {
         return new EqualsBuilder().reflectionEquals(this, o);
