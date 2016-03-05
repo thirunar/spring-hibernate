@@ -14,7 +14,7 @@ public class CollegeController {
     private CollegeService collegeService;
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     public College getCollege(@RequestParam long id) {
         return collegeService.getCollege(id);
     }
