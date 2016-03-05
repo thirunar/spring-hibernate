@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet id="201603050433" author="Thiru">
+        <createTable tableName="COLLEGE">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(255)"/>
+        </createTable>
+
+        <createTable tableName="DEPARTMENT">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(255)"/>
+            <column name="COLLEGE_ID" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="DEPARTMENT" baseColumnNames="COLLEGE_ID"
+                                 constraintName="DEPARTMENT_COLLEGE_ID_FK"
+                                 referencedTableName="COLLEGE"
+                                 referencedColumnNames="ID"/>
+
+        <createTable tableName="STAFF">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(255)"/>
+            <column name="DESIGNATION" type="varchar(255)"/>
+            <column name="DEPARTMENT_ID" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="STAFF" baseColumnNames="DEPARTMENT_ID"
+                                 constraintName="STAFF_DEPARTMENT_ID_FK"
+                                 referencedTableName="DEPARTMENT"
+                                 referencedColumnNames="ID"/>
+
+    </changeSet>
+
+</databaseChangeLog>
