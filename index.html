@@ -22,9 +22,9 @@
       <h3>
 <a id="integration-spring-with-jpa" class="anchor" href="#integration-spring-with-jpa" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Integration Spring with JPA</h3>
 
-<p>The Spring Framework is an application framework and inversion of control container for the Java platform. The framework's core features can be used by any Java application, but there are extensions for building web applications on top of the Java EE platform. 
-``
-The Java Persistence API (JPA) is a Java application programming interface specification that describes the management of relational data in applications using Java Platform, Standard Edition and Java Platform, Enterprise Edition.</p>
+<p>The Spring Framework is an application framework and inversion of control container for the Java platform. The framework's core features can be used by any Java application, but there are extensions for building web applications on top of the Java EE platform. </p>
+
+<p>The Java Persistence API (JPA) is a Java application programming interface specification that describes the management of relational data in applications using Java Platform, Standard Edition and Java Platform, Enterprise Edition.</p>
 
 <p>This project will explain you about integrating the Spring framework with JPA. As a part of this, it will also explain the use of Liquibase libraries for creating the tables in the database. Liquibase is an open source database-independent library for tracking, managing and applying database schema changes.</p>
 
@@ -36,9 +36,9 @@ The Java Persistence API (JPA) is a Java application programming interface speci
 <h3>
 <a id="adding-the-dependencies" class="anchor" href="#adding-the-dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Adding the dependencies</h3>
 
-<p>Following are the dependencies which are needed for the project. Please add the dependencies in the <code>pom.xml</code>
-`
-        
+<p>Following are the dependencies which are needed for the project. Please add the dependencies in the pom.xml</p>
+
+<p>`           
             org.springframework.boot
             spring-boot-starter-data-jpa
         </p>
@@ -91,7 +91,7 @@ This project uses postgresql as the database so adding the dependency for it. </
 
 <p>With this assumption, the first step in setting up liquibase is creating a database called <code>college</code> in postgres DB. This can be done using the command: <code>createdb college</code></p>
 
-<p>The following properties has to be added in <code>application.properties</code></p>
+<p>The following properties have to be added in application.properties</p>
 
 <p><code>
 spring.datasource.url=jdbc:postgresql://localhost:5432/college
@@ -129,8 +129,7 @@ liquibase.change-log=classpath:liquibase/changesets.xml
 &lt;/changeSet&gt;
 </code></pre>
 
-<p>
-`</p>
+<p>`</p>
 
 <p>Run <code>mvn clean install</code> to add these tables to the database.</p>
 
