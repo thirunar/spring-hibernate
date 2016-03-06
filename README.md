@@ -5,6 +5,10 @@ The Java Persistence API (JPA) is a Java application programming interface speci
 
 This project will explain you about integrating the Spring framework with JPA. As a part of this, it will also explain the use of Liquibase libraries for creating the tables in the database. Liquibase is an open source database-independent library for tracking, managing and applying database schema changes.
 
+### How to run the project
+
+` mvn spring-boot:run`
+
 ### Intializing the Spring project
 Use the [link](https://start.spring.io/) to bootstrap your spring application. 
 
@@ -113,55 +117,55 @@ College Class:
 
 `
 
-@Entity
-@Table(name = "COLLEGE")
-public class College {
+    @Entity
+    @Table(name = "COLLEGE")
+    public class College {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private long id;
 
-    @Column(name = "name")
-    private String name;
+        @Column(name = "name")
+        private String name;
 
-    @OneToMany(mappedBy = "college", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    private List<Department> departments;
+        @OneToMany(mappedBy = "college", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+        private List<Department> departments;
 
-    public College() {
+        public College() {
+        }
+
+        public College(int id) {
+            this.id = id;
+        }
+
+        public College(String name, List<Department> departments) {
+            this.name = name;
+            this.departments = departments;
+        }
+
+
+        public long getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return new EqualsBuilder().reflectionEquals(this, o);
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(17, 37).reflectionHashCode(this);
+        }
+
+        public List<Department> getDepartments() {
+            return departments;
+        }
     }
-
-    public College(int id) {
-        this.id = id;
-    }
-
-    public College(String name, List<Department> departments) {
-        this.name = name;
-        this.departments = departments;
-    }
-
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return new EqualsBuilder().reflectionEquals(this, o);
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37).reflectionHashCode(this);
-    }
-
-    public List<Department> getDepartments() {
-        return departments;
-    }
-}
 
 `
 
@@ -171,47 +175,115 @@ Department Class:
 
 `
 
-@Entity
-@Table(name = "DEPARTMENT")
-public class Department {
+    @Entity
+    @Table(name = "DEPARTMENT")
+    public class Department {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private long id;
 
-    @Column(name = "NAME")
-    private String name;
+        @Column(name = "NAME")
+        private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "COLLEGE_ID", referencedColumnName = "ID")
-    private College college;
+        @ManyToOne
+        @JoinColumn(name = "COLLEGE_ID", referencedColumnName = "ID")
+        private College college;
 
-    public Department() {
+        public Department() {
+        }
+
+        public Department(String name) {
+            this.name = name;
+        }
+
+        public long getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return new EqualsBuilder().reflectionEquals(this, o);
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(17, 37).reflectionHashCode(this);
+        }
+
     }
 
-    public Department(String name) {
-        this.name = name;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return new EqualsBuilder().reflectionEquals(this, o);
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37).reflectionHashCode(this);
-    }
-
-}
 `
 
 Since, a `department` will belong to a college, there is many to one mapping for the field `college`. The field is also annotated with `JoinColumn` for specifying based on which join has to done.
+
+### Adding and retrieving data to the database
+
+A controller called `CollegeController` has been creating for serving the purpose. This basically calls the service and the service in turn calls the `CollegeRepository` where the logic of adding and retrieving the data resides. The controller basically exposes `GET` and `POST` APIs.
+
+CollegeController.java:
+`
+
+    @Controller
+    @RequestMapping("/college")
+    public class CollegeController {
+
+        @Autowired
+        private CollegeService collegeService;
+
+        @ResponseBody
+        @RequestMapping(method = RequestMethod.GET, produces = "application/json")
+        public College getCollege(@RequestParam long id) {
+            return collegeService.getCollege(id);
+        }
+
+        @ResponseBody
+        @RequestMapping(method = RequestMethod.POST, produces = "text/plain", consumes = "application/json")
+        public String save(@RequestBody College college) {
+            collegeService.save(college);
+            return "Successfully saved";
+        }
+    }
+
+`
+
+The `getCollege` method used to get the college and its department based on the College id. The `save` posts the data to the database. 
+
+### Repository Layer
+This layer interacts with the database and helps in adding and retrieving the data from the database. The class called `CollegeRespository` solves this purpose. This uses `EntityManager` for saving and fetcing the data.
+
+`
+
+    @Repository
+    public class CollegeRepository {
+
+        @PersistenceContext
+        private EntityManager entityManager;
+
+        @Autowired
+        private EntityManagerFactory entityManagerFactory;
+
+        @Transactional
+        public void save(College college) {
+            entityManager.persist(college);
+        }
+
+        public College getCollege(long id) {
+            return entityManager.find(College.class, id);
+        }
+
+        public List<Department> getDepartmentsForTheCollege(long id) {
+            College college = getCollege(id);
+            return college.getDepartments();
+        }
+    }
+`
+The class is annotated with `Repository`. The `save` method is made `Transactional`. The `getCollege` method fetches the college with its departments and returns the data.
+
+### References:
+* http://www.baeldung.com/liquibase-refactor-schema-of-java-app
+* https://en.wikipedia.org/wiki/Java_Persistence_API
