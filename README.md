@@ -9,7 +9,8 @@ This project will explain you about integrating the Spring framework with JPA. A
 Use the [link](https://start.spring.io/) to bootstrap your spring application. 
 
 ### Adding the dependencies
-Following are the dependencies which are needed for the project. Please add the dependencies in the `pom.xml`
+Following are the dependencies which are needed for the project. Please add the dependencies in the pom.xml
+
 `
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -54,14 +55,14 @@ The department table will have the following fields:
 
 With this assumption, the first step in setting up liquibase is creating a database called `college` in postgres DB. This can be done using the command: `createdb college`
 
-The following properties has to be added in `application.properties`
-`
-spring.datasource.url=jdbc:postgresql://localhost:5432/college
-spring.datasource.username=postgres
-spring.datasource.password=postgres
-liquibase.change-log=classpath:liquibase/changesets.xml
-`
+The following properties has to be added in application.properties
+`spring.datasource.url=jdbc:postgresql://localhost:5432/college`
+`spring.datasource.username=postgres`
+`spring.datasource.password=postgres`
+`liquibase.change-log=classpath:liquibase/changesets.xml`
+
 Create a file called `changesets.xml` under `resources/liquibase` and add the following lines:
+
 `
 <?xml version="1.0" encoding="UTF-8"?>
 
@@ -93,8 +94,8 @@ Create a file called `changesets.xml` under `resources/liquibase` and add the fo
 
     </changeSet>
 
-</databaseChangeLog>
-`
+</databaseChangeLog>`
+
 Run `mvn clean install` to add these tables to the database.
 
 ### Support or Contact
