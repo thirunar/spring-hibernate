@@ -91,15 +91,18 @@ This project uses postgresql as the database so adding the dependency for it. </
 
 <p>With this assumption, the first step in setting up liquibase is creating a database called <code>college</code> in postgres DB. This can be done using the command: <code>createdb college</code></p>
 
-<p>The following properties has to be added in <code>application.properties</code>
-<code>
+<p>The following properties has to be added in <code>application.properties</code></p>
+
+<p><code>
 spring.datasource.url=jdbc:postgresql://localhost:5432/college
 spring.datasource.username=postgres
 spring.datasource.password=postgres
 liquibase.change-log=classpath:liquibase/changesets.xml
-</code>
-Create a file called <code>changesets.xml</code> under <code>resources/liquibase</code> and add the following lines:
-`
+</code></p>
+
+<p>Create a file called <code>changesets.xml</code> under <code>resources/liquibase</code> and add the following lines:</p>
+
+<p>`
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 </p>
 
