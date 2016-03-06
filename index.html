@@ -29,6 +29,11 @@
 <p>This project will explain you about integrating the Spring framework with JPA. As a part of this, it will also explain the use of Liquibase libraries for creating the tables in the database. Liquibase is an open source database-independent library for tracking, managing and applying database schema changes.</p>
 
 <h3>
+<a id="how-to-run-the-project" class="anchor" href="#how-to-run-the-project" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to run the project</h3>
+
+<p><code>mvn spring-boot:run</code></p>
+
+<h3>
 <a id="intializing-the-spring-project" class="anchor" href="#intializing-the-spring-project" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Intializing the Spring project</h3>
 
 <p>Use the <a href="https://start.spring.io/">link</a> to bootstrap your spring application. </p>
@@ -38,12 +43,14 @@
 
 <p>Following are the dependencies which are needed for the project. Please add the dependencies in the pom.xml</p>
 
-<p>`           
-            org.springframework.boot
-            spring-boot-starter-data-jpa
-        </p>
+<p>`</p>
 
 <pre><code>    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
         &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
         &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
         &lt;version&gt;${postgresql.version}&lt;/version&gt;
@@ -91,42 +98,50 @@ This project uses postgresql as the database so adding the dependency for it. </
 
 <p>With this assumption, the first step in setting up liquibase is creating a database called <code>college</code> in postgres DB. This can be done using the command: <code>createdb college</code></p>
 
-<p>The following properties have to be added in application.properties</p>
+<p>The following properties has to be added in application.properties</p>
 
-<p><code>
-spring.datasource.url=jdbc:postgresql://localhost:5432/college
-spring.datasource.username=postgres
-spring.datasource.password=postgres
-liquibase.change-log=classpath:liquibase/changesets.xml
-</code></p>
+<p>`
+    spring.datasource.url=jdbc:postgresql://localhost:5432/college
+    spring.datasource.username=postgres
+    spring.datasource.password=postgres
+    liquibase.change-log=classpath:liquibase/changesets.xml</p>
+
+<p>`</p>
 
 <p>Create a file called <code>changesets.xml</code> under <code>resources/liquibase</code> and add the following lines:</p>
 
-<p>`
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-</p>
+<p>`</p>
 
-<pre><code>&lt;changeSet id="201603050433" author="Thiru"&gt;
-    &lt;createTable tableName="COLLEGE"&gt;
-        &lt;column name="ID" type="BIGINT" autoIncrement="true"&gt;
-            &lt;constraints primaryKey="true" nullable="false"/&gt;
-        &lt;/column&gt;
-        &lt;column name="NAME" type="varchar(255)"/&gt;
-    &lt;/createTable&gt;
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd"&gt;
 
-    &lt;createTable tableName="DEPARTMENT"&gt;
-        &lt;column name="ID" type="BIGINT" autoIncrement="true"&gt;
-            &lt;constraints primaryKey="true" nullable="false"/&gt;
-        &lt;/column&gt;
-        &lt;column name="NAME" type="varchar(255)"/&gt;
-        &lt;column name="COLLEGE_ID" type="BIGINT"/&gt;
-    &lt;/createTable&gt;
-    &lt;addForeignKeyConstraint baseTableName="DEPARTMENT" baseColumnNames="COLLEGE_ID"
-                             constraintName="DEPARTMENT_COLLEGE_ID_FK"
-                             referencedTableName="COLLEGE"
-                             referencedColumnNames="ID"/&gt;
+    &lt;changeSet id="201603050433" author="Thiru"&gt;
+        &lt;createTable tableName="COLLEGE"&gt;
+            &lt;column name="ID" type="BIGINT" autoIncrement="true"&gt;
+                &lt;constraints primaryKey="true" nullable="false"/&gt;
+            &lt;/column&gt;
+            &lt;column name="NAME" type="varchar(255)"/&gt;
+        &lt;/createTable&gt;
 
-&lt;/changeSet&gt;
+        &lt;createTable tableName="DEPARTMENT"&gt;
+            &lt;column name="ID" type="BIGINT" autoIncrement="true"&gt;
+                &lt;constraints primaryKey="true" nullable="false"/&gt;
+            &lt;/column&gt;
+            &lt;column name="NAME" type="varchar(255)"/&gt;
+            &lt;column name="COLLEGE_ID" type="BIGINT"/&gt;
+        &lt;/createTable&gt;
+        &lt;addForeignKeyConstraint baseTableName="DEPARTMENT" baseColumnNames="COLLEGE_ID"
+                                 constraintName="DEPARTMENT_COLLEGE_ID_FK"
+                                 referencedTableName="COLLEGE"
+                                 referencedColumnNames="ID"/&gt;
+
+    &lt;/changeSet&gt;
+
+&lt;/databaseChangeLog&gt;
 </code></pre>
 
 <p>`</p>
@@ -134,9 +149,196 @@ liquibase.change-log=classpath:liquibase/changesets.xml
 <p>Run <code>mvn clean install</code> to add these tables to the database.</p>
 
 <h3>
-<a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Support or Contact</h3>
+<a id="creating-the-domain-models" class="anchor" href="#creating-the-domain-models" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Creating the domain models</h3>
 
-<p>Having trouble with Pages? Check out our <a href="https://help.github.com/pages">documentation</a> or <a href="https://github.com/contact">contact support</a> and we’ll help you sort it out.</p>
+<p>Create two class called College and Department and add the corresponding field variable. </p>
+
+<p>College Class:</p>
+
+<p>`</p>
+
+<pre><code>@Entity
+@Table(name = "COLLEGE")
+public class College {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(name = "name")
+    private String name;
+
+    @OneToMany(mappedBy = "college", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    private List&lt;Department&gt; departments;
+
+    public College() {
+    }
+
+    public College(int id) {
+        this.id = id;
+    }
+
+    public College(String name, List&lt;Department&gt; departments) {
+        this.name = name;
+        this.departments = departments;
+    }
+
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return new EqualsBuilder().reflectionEquals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).reflectionHashCode(this);
+    }
+
+    public List&lt;Department&gt; getDepartments() {
+        return departments;
+    }
+}
+</code></pre>
+
+<p>`</p>
+
+<p>Note that, this class is annotated with <code>Entity and Table</code> and maps to the <code>college</code> table. College will have many departments in it. So, there is a one to many mapping for the list of departments fields. <code>@GeneratedValue</code> will help you in auto increment the <code>id</code> field.</p>
+
+<p>Department Class:</p>
+
+<p>`</p>
+
+<pre><code>@Entity
+@Table(name = "DEPARTMENT")
+public class Department {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(name = "NAME")
+    private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "COLLEGE_ID", referencedColumnName = "ID")
+    private College college;
+
+    public Department() {
+    }
+
+    public Department(String name) {
+        this.name = name;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return new EqualsBuilder().reflectionEquals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).reflectionHashCode(this);
+    }
+
+}
+</code></pre>
+
+<p>`</p>
+
+<p>Since, a <code>department</code> will belong to a college, there is many to one mapping for the field <code>college</code>. The field is also annotated with <code>JoinColumn</code> for specifying based on which join has to done.</p>
+
+<h3>
+<a id="adding-and-retrieving-data-to-the-database" class="anchor" href="#adding-and-retrieving-data-to-the-database" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Adding and retrieving data to the database</h3>
+
+<p>A controller called <code>CollegeController</code> has been creating for serving the purpose. This basically calls the service and the service in turn calls the <code>CollegeRepository</code> where the logic of adding and retrieving the data resides. The controller basically exposes <code>GET</code> and <code>POST</code> APIs.</p>
+
+<p>CollegeController.java:
+`</p>
+
+<pre><code>@Controller
+@RequestMapping("/college")
+public class CollegeController {
+
+    @Autowired
+    private CollegeService collegeService;
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
+    public College getCollege(@RequestParam long id) {
+        return collegeService.getCollege(id);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, produces = "text/plain", consumes = "application/json")
+    public String save(@RequestBody College college) {
+        collegeService.save(college);
+        return "Successfully saved";
+    }
+}
+</code></pre>
+
+<p>`</p>
+
+<p>The <code>getCollege</code> method used to get the college and its department based on the College id. The <code>save</code> posts the data to the database. </p>
+
+<h3>
+<a id="repository-layer" class="anchor" href="#repository-layer" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Repository Layer</h3>
+
+<p>This layer interacts with the database and helps in adding and retrieving the data from the database. The class called <code>CollegeRespository</code> solves this purpose. This uses <code>EntityManager</code> for saving and fetcing the data.</p>
+
+<p>`</p>
+
+<pre><code>@Repository
+public class CollegeRepository {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
+
+    @Transactional
+    public void save(College college) {
+        entityManager.persist(college);
+    }
+
+    public College getCollege(long id) {
+        return entityManager.find(College.class, id);
+    }
+
+    public List&lt;Department&gt; getDepartmentsForTheCollege(long id) {
+        College college = getCollege(id);
+        return college.getDepartments();
+    }
+}
+</code></pre>
+
+<p><code>
+The class is annotated with</code>Repository<code>. The</code>save<code>method is made</code>Transactional<code>. The</code>getCollege` method fetches the college with its departments and returns the data.</p>
+
+<h3>
+<a id="references" class="anchor" href="#references" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>References:</h3>
+
+<ul>
+<li><a href="http://www.baeldung.com/liquibase-refactor-schema-of-java-app">http://www.baeldung.com/liquibase-refactor-schema-of-java-app</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Java_Persistence_API">https://en.wikipedia.org/wiki/Java_Persistence_API</a></li>
+</ul>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/thirunar/spring-jpa">Spring-JPA</a> is maintained by <a href="https://github.com/thirunar">thirunar</a>.</span>
