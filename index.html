@@ -80,7 +80,7 @@ This project uses postgresql as the database so adding the dependency for it. </
 <h3>
 <a id="setup-liquibase" class="anchor" href="#setup-liquibase" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Setup Liquibase</h3>
 
-<p>I going consider the College and department relationship for the demonstration. I will be having two tables named <code>college, department</code>. The college table will have the following fields</p>
+<p>I am going consider the College and department relationship for the demonstration. I will be having two tables named <code>college, department</code>. The college table will have the following fields</p>
 
 <ul>
 <li>id</li>
@@ -96,7 +96,7 @@ This project uses postgresql as the database so adding the dependency for it. </
 <code>college_id</code> is the foreign key which references the <code>id</code> column in the college table.</li>
 </ul>
 
-<p>With this assumption, the first step in setting up liquibase is creating a database called <code>college</code> in postgres DB. This can be done using the command: <code>createdb college</code></p>
+<p>With this assumption, the first step for setting up liquibase is creating a database called <code>college</code> in postgres DB. This can be done using the command: <code>createdb college</code></p>
 
 <p>The following properties has to be added in application.properties</p>
 
