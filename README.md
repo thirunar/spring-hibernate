@@ -282,6 +282,7 @@ This layer interacts with the database and helps in adding and retrieving the da
         }
     }
 `
+
 The class is annotated with `Repository`. The `save` method is made `Transactional`. The `getCollege` method fetches the college with its departments and returns the data.
 
 ### References:
