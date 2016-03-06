@@ -12,6 +12,7 @@ Use the [link](https://start.spring.io/) to bootstrap your spring application.
 Following are the dependencies which are needed for the project. Please add the dependencies in the pom.xml
 
 `
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -56,47 +57,161 @@ The department table will have the following fields:
 With this assumption, the first step in setting up liquibase is creating a database called `college` in postgres DB. This can be done using the command: `createdb college`
 
 The following properties has to be added in application.properties
-`spring.datasource.url=jdbc:postgresql://localhost:5432/college`
-`spring.datasource.username=postgres`
-`spring.datasource.password=postgres`
-`liquibase.change-log=classpath:liquibase/changesets.xml`
+
+`
+
+    spring.datasource.url=jdbc:postgresql://localhost:5432/college
+    spring.datasource.username=postgres
+    spring.datasource.password=postgres
+    liquibase.change-log=classpath:liquibase/changesets.xml
+
+`
 
 Create a file called `changesets.xml` under `resources/liquibase` and add the following lines:
 
 `
-<?xml version="1.0" encoding="UTF-8"?>
 
-<databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <?xml version="1.0" encoding="UTF-8"?>
+    <databaseChangeLog
+            xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
 
-    <changeSet id="201603050433" author="Thiru">
-        <createTable tableName="COLLEGE">
-            <column name="ID" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="NAME" type="varchar(255)"/>
-        </createTable>
+        <changeSet id="201603050433" author="Thiru">
+            <createTable tableName="COLLEGE">
+                <column name="ID" type="BIGINT" autoIncrement="true">
+                    <constraints primaryKey="true" nullable="false"/>
+                </column>
+                <column name="NAME" type="varchar(255)"/>
+            </createTable>
 
-        <createTable tableName="DEPARTMENT">
-            <column name="ID" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="NAME" type="varchar(255)"/>
-            <column name="COLLEGE_ID" type="BIGINT"/>
-        </createTable>
-        <addForeignKeyConstraint baseTableName="DEPARTMENT" baseColumnNames="COLLEGE_ID"
-                                 constraintName="DEPARTMENT_COLLEGE_ID_FK"
-                                 referencedTableName="COLLEGE"
-                                 referencedColumnNames="ID"/>
+            <createTable tableName="DEPARTMENT">
+                <column name="ID" type="BIGINT" autoIncrement="true">
+                    <constraints primaryKey="true" nullable="false"/>
+                </column>
+                <column name="NAME" type="varchar(255)"/>
+                <column name="COLLEGE_ID" type="BIGINT"/>
+            </createTable>
+            <addForeignKeyConstraint baseTableName="DEPARTMENT" baseColumnNames="COLLEGE_ID"
+                                     constraintName="DEPARTMENT_COLLEGE_ID_FK"
+                                     referencedTableName="COLLEGE"
+                                     referencedColumnNames="ID"/>
 
-    </changeSet>
+        </changeSet>
 
-</databaseChangeLog>`
+    </databaseChangeLog>
+
+`
 
 Run `mvn clean install` to add these tables to the database.
 
-### Support or Contact
-Having trouble with Pages? Check out our [documentation](https://help.github.com/pages) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+### Creating the domain models
+Create two class called College and Department and add the corresponding field variable. 
+
+College Class:
+
+`
+
+@Entity
+@Table(name = "COLLEGE")
+public class College {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(name = "name")
+    private String name;
+
+    @OneToMany(mappedBy = "college", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    private List<Department> departments;
+
+    public College() {
+    }
+
+    public College(int id) {
+        this.id = id;
+    }
+
+    public College(String name, List<Department> departments) {
+        this.name = name;
+        this.departments = departments;
+    }
+
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return new EqualsBuilder().reflectionEquals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).reflectionHashCode(this);
+    }
+
+    public List<Department> getDepartments() {
+        return departments;
+    }
+}
+
+`
+
+Note that, this class is annotated with `Entity and Table` and maps to the `college` table. College will have many departments in it. So, there is a one to many mapping for the list of departments fields. `@GeneratedValue` will help you in auto increment the `id` field.
+
+Department Class:
+
+`
+
+@Entity
+@Table(name = "DEPARTMENT")
+public class Department {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(name = "NAME")
+    private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "COLLEGE_ID", referencedColumnName = "ID")
+    private College college;
+
+    public Department() {
+    }
+
+    public Department(String name) {
+        this.name = name;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return new EqualsBuilder().reflectionEquals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).reflectionHashCode(this);
+    }
+
+}
+`
+
+Since, a `department` will belong to a college, there is many to one mapping for the field `college`. The field is also annotated with `JoinColumn` for specifying based on which join has to done.
